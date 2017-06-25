@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="org.study.mapper.TReplyMapper">
+  
+  <select id="TReplyList" resultType="TReplyVO">
+  
+  select * from tb1_reply where bno= #{bno} order by rno 
+  
+  </select>
+  
+  <insert id="TReplyCreate">
+  
+  insert into tb1_reply (bno,replytext,replyer) values(#{bno},#{replytext},#{replyer})
+	
+  
+  </insert>
+  
+  
+  
+  <update id="TReplyModify">
+  
+  update tb1_reply set replytext = #{replytext}, updatedate = now() where rno = #{rno} 
+  
+  </update>
+  
+  <delete id="TReplyDelete">
+  
+  delete from tb1_reply where rno = #{rno} 
+  </delete>
+  </mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.study.mapper.messageMapper">
+  
+  
+  <insert id="messageRegister">
+    insert into tb1_message (sender,receiver,messagecontent) values(#{sender},#{receiver},#{messagecontent})
+  </insert>
+  
+  <select id="messageListAll" resultType="MessageVO">
+  
+ select * from tb1_message where (sender = #{uid} and receiver = #{other}) or (sender = #{other} and receiver = #{uid})
+  </select>
+
+	<insert id="messageRoomRegister">
+	insert into tb1_messageRoom (sender,receiver) values(#{uid},#{other})
+	</insert>
+	
+	<select id="messageRoomCheck" resultType="integer">
+	
+	select count(*) from tb1_messageRoom where (sender = #{uid} and receiver = #{other}) or (sender = #{other} and receiver = #{uid})
+
+	</select>
+	
+	<select id="myMessageList" resultType="MessageRoomVO">
+	select * from tb1_messageRoom where sender = #{uid} or receiver = #{uid}  
+	</select>
+
+	<select id="noReadcount" resultType="MessageRoomVO">
+	select sender,count(*) as count from tb1_message where receiver = #{uid} and readcheck = 0 group by sender
+	</select>
+	
+	
+	<update id="messageRead">
+	
+	update tb1_message set readcheck = 1 where receiver = #{uid} and sender = #{sender} and readcheck = 0 
+	
+	</update>
+	
+  </mapper>

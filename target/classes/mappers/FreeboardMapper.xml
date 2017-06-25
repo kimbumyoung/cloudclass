@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="org.zerock.mapper.FreeBoardMapper">
+  
+  <insert id="create">
+    insert into tbl_freeboard (title,content,writer) values (#{title},#{content},#{writer})
+  </insert>
+  
+  <select id="read" resultType="FreeBoardVO">
+    select bno,title,content,writer,regdate,viewcnt,replycnt,u.uname from tbl_freeboard f join tb1_user u on f.writer = u.uid where bno=#{bno}
+    <!-- replycnt를 추가해보자  그럼 readPage, modifyPage에서 댓글수를 확인할 수 있음. -->
+  </select>
+  
+  <update id="update">
+    update tbl_freeboard set title=#{title}, content=#{content} where bno=#{bno}
+  </update>
+
+  <delete id="delete">
+    delete from tbl_freeboard where bno=#{bno}
+  </delete>
+
+  <select id="countPaging" resultType="int">
+    <![CDATA[
+      select count(bno) from tbl_freeboard where bno > 0
+    ]]>
+  </select>  
+  
+  <select id="listSearch" resultType="FreeBoardVO">
+    <![CDATA[
+      select bno, title, content, writer, regdate, viewcnt, replycnt, u.uname from tbl_freeboard f join tb1_user u on f.writer = u.uid where bno > 0 
+    ]]>
+        <include refid="search"></include>
+    <![CDATA[
+      order by bno desc limit #{startPage}, #{perPageNum}
+    ]]>
+  </select>
+  
+  <select id="listSearchCount" resultType="int">
+    <![CDATA[
+      select count(bno) from tbl_freeboard f join tb1_user u on f.writer = u.uid where bno > 0
+    ]]>
+     <include refid="search"></include>
+  </select>
+  
+  <sql id="search">
+    <if test="searchType != null">
+          <if test="searchType == 't'.toString()">
+            and title like CONCAT('%',#{keyword},'%')
+          </if>
+          <if test="searchType == 'c'.toString()">
+            and content like CONCAT('%',#{keyword},'%')
+          </if>
+          <if test="searchType == 'w'.toString()">
+            and uname like CONCAT('%',#{keyword},'%')
+          </if>
+          <if test="searchType == 'tc'.toString()">
+            and (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%'))
+          </if>
+          <if test="searchType == 'cw'.toString()">
+            and (content like CONCAT('%',#{keyword},'%') OR uname like CONCAT ('%',#{keyword},'%'))
+          </if>
+          <if test="searchType == 'tcw'.toString()">
+            and (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%'))
+          </if>
+      </if>
+  </sql>
+  
+  <update id="updateReplyCnt">
+    update tbl_freeboard set replycnt= replycnt + #{amount} where bno=#{bno}
+  </update>
+  
+  <update id="updateViewCnt">
+    update tbl_freeboard set viewcnt= viewcnt +1 where bno=#{bno}
+  </update>  
+  
+  <insert id="addAttach">
+    insert into tbl_freeattach (fullname,bno) values(#{fullName},LAST_INSERT_ID())
+  </insert>
+  
+  <delete id="deleteAttach">
+    delete from tbl_freeattach where bno=#{bno}
+  </delete>
+  
+  <insert id="replaceAttach">
+    insert into tbl_freeattach(fullname,bno) values (#{fullName}, #{bno})
+  </insert>
+  
+  <select id="getAttach" resultType="string">
+      select fullname from tbl_freeattach where bno=#{bno} order by regdate
+  </select>  
+  
+  <delete id="deleteReply">
+  delete from tbl_freereply where bno = #{bno}
+  
+  </delete>
+     
+  </mapper>

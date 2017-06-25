@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.study.mapper.myPageMapper">
+  
+  <insert id="uimageRegister">
+  update tb1_user set uimage = #{uimage} where uid = #{uid}
+  </insert>
+  
+  
+  <select id="uimageGet" resultType="string">
+  
+  select uimage from tb1_user where uid = #{uid}
+  
+  </select>
+  
+
+  <select id="myBoardList" resultType="BoardVO">
+  select *from tb1_board where uid= #{uid}
+  </select>
+  
+  <select id="myRequestBoardList" resultType="SboardVO">
+  select *from tb1_sboard where uid= #{uid}
+  </select>
+  
+  <select id="applyList" resultType="BoardVO">
+  select b.bno,b.title,b.writer,b.lesson_location,b.coverImagePath from tb1_board b join tb1_meeting m on b.bno = m.bno where m.uid = #{uid}
+  </select>
+  
+  <delete id="applyCancel">
+  
+  delete from tb1_meeting where bno = #{bno} and uid = #{uid}
+  </delete>
+  
+  <select id="applyuserList" resultType="MeetingVO">
+ 	select m.phoneNumber,m.job,u.uname,u.uimage,u.email from tb1_meeting m join tb1_user u on m.uid = u.uid  where bno= #{bno}
+  </select>
+  </mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.study.mapper.meetingMapper">
+
+<insert id="meetingComplete">
+insert into tb1_meeting (bno,uid,phoneNumber,job) values(#{bno},#{uid},#{phoneNumber},#{job})
+</insert>
+
+<select id="meetingRequestCheck" resultType="MeetingVO">
+select *from tb1_meeting where bno = #{bno} and uid =#{uid}
+</select>
+
+<update id="meetingCountUp">
+	update tb1_board set applynum = applynum+1 where bno = #{bno}
+</update>
+
+<update id="meetingCountDown">
+	update tb1_board set applynum = applynum-1 where bno = #{bno}
+</update>
+
+<select id="meetingBoardInfo" resultType="BoardVO">
+	select bno,title,dateEnd,dateStart,lessonTimeStart,lessonTimeEnd from tb1_board where bno = #{bno} 
+
+</select>
+
+</mapper>

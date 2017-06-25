@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.study.mapper.boardMapper">
+  
+  <select id="boardListAll" resultType="BoardVO">
+  
+  select *from tb1_board
+  
+  </select>
+  
+  <select id="boardListPage" resultType="BoardVO">
+  select b.bno, b.title, b.content, b.writer, b.regdate, b.replycnt, b.uid, b.career, b.lesson_location, b.category, u.uimage, b.coverImagePath, b.dateStart, b.dateEnd, b.number, b.lessonTimeStart, b.lessonTimeEnd, b.applynum  from tb1_board b join tb1_user u on b.uid = u.uid    
+  
+  <include refid="search"></include>
+  
+  order by bno desc limit #{startPage},#{perPageNum}
+  </select>
+
+
+  
+  <select id="boardTotalCount" resultType="int">
+  
+  select count(bno) from tb1_board
+  <include refid="search"></include>
+  
+  </select>
+  
+  
+  <select id="boardRead" resultType="BoardVO">
+  select * from tb1_board where bno = #{bno}
+  </select>
+  
+  
+  <update id="boardModify">
+  update tb1_board set title=#{title},content=#{content},career=#{career},lesson_location=#{lesson_location},dateStart=#{dateStart},dateEnd=#{dateEnd},number=#{number},lessonTimeStart=#{lessonTimeStart},lessonTimeEnd=#{lessonTimeEnd},category=#{category},coverImagePath=#{coverImagePath} 
+  where bno= #{bno}
+  
+  </update>
+  
+  <insert id="boardRegister">
+  
+  insert into tb1_board (title,content,writer,uid,career,lesson_location,category,coverImagePath,dateStart,dateEnd,number,lessonTimeStart,lessonTimeEnd) 
+  values(#{title},#{content},#{writer},#{uid},#{career},#{lesson_location},#{category},#{coverImagePath},#{dateStart},#{dateEnd},#{number},#{lessonTimeStart},#{lessonTimeEnd})
+  
+  </insert>
+  
+  <delete id="boardDelete">
+  delete from tb1_board where bno= #{bno}
+  
+  </delete>
+  
+  <insert id="addAttach">
+  
+  insert into tb1_attach(fullname,bno) values (#{fullName}, LAST_INSERT_ID())
+  
+  </insert>
+  
+  <select id="getAttach" resultType="string">
+  select fullname from tb1_attach where bno = #{bno} order by regdate
+  </select>
+  
+  <delete id="deleteAttach">
+     delete from tb1_attach where bno = #{bno}
+  </delete>
+  
+  <delete id="deleteReply">
+     delete from tb1_reply where bno = #{bno}
+  </delete>
+  <delete id="deleteApply">
+     delete from tb1_meeting where bno = #{bno}
+  </delete>
+  
+  <insert id="replaceAttach">
+  insert into tb1_attach(fullname,bno) values (#{fullName},#{bno})
+  </insert>
+  <select id="mainBoardList" resultType="BoardVO">
+  select b.bno, b.title, b.content, b.writer, b.regdate, b.replycnt, b.uid, b.career, b.lesson_location, b.category, u.uimage, b.coverImagePath, b.dateStart, b.dateEnd, b.number, b.lessonTimeStart, b.lessonTimeEnd, b.applynum from tb1_board b join tb1_user u on b.uid = u.uid order by regdate desc limit 0,9 
+  </select>
+  
+  
+ <sql id="search">
+    <if test="categoryType != null">
+       <if test="categoryType == 'de'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%')) 
+       </if>
+       <if test="categoryType == 'a'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '헬스/필라테스') 
+       </if>
+       <if test="categoryType == 'b'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '주식투자') 
+       </if>
+       <if test="categoryType == 'c'.toString()">
+          where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '메이크업') 
+       </if>
+       <if test="categoryType == 'd'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '영상편집') 
+       </if>
+       <if test="categoryType == 'e'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '영어') 
+       </if>
+       <if test="categoryType == 'f'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '스피치/발표') 
+       </if>
+       <if test="categoryType == 'g'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '파워포인트') 
+       </if>
+       <if test="categoryType == 'h'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '댄스') 
+       </if>
+       <if test="categoryType == 'i'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '프로그래밍') 
+       </if>
+       <if test="categoryType == 'j'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '디자인') 
+       </if>
+       <if test="categoryType == 'k'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '베이킹') 
+       </if>
+       <if test="categoryType == 'l'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '미술') 
+       </if>
+       <if test="categoryType == 'm'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '취업') 
+       </if>
+       <if test="categoryType == 'n'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '공예') 
+       </if>
+       <if test="categoryType == 'o'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '공연') 
+       </if>
+       <if test="categoryType == 'p'.toString()">
+       where (title like CONCAT('%',#{keyword},'%') OR content like CONCAT ('%',#{keyword},'%') OR writer like CONCAT ('%',#{keyword},'%')  OR lesson_location like CONCAT ('%',#{keyword},'%') OR category like CONCAT ('%',#{keyword},'%'))
+          AND (category = '문서') 
+       </if>
+    </if>
+
+ </sql>
+  
+  
+  
+  </mapper>

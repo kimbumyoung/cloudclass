@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.study.mapper.sboardMapper">
+  	<insert id="create">
+  	insert into tb1_sboard (title,content,writer,area,place,hopedate,lessontime,lessoncnt,lesson,level,sex,term,uid)
+  	values(#{title},#{content},#{writer},#{area},#{place},#{hopedate},#{lessontime},#{lessoncnt},#{lesson},#{level},#{sex},#{term},#{uid})
+  	</insert>
+	<select id="read" resultType="org.study.domain.SboardVO">
+     select
+     b.bno, b.title, b.content, b.writer, b.regdate, b.replycnt, b.viewcnt, b.area, b.place, b.hopedate, b.lessontime, b.lessoncnt, b.lesson, b.level, b.sex, b.term, b.uid, u.email 
+     from tb1_sboard b join tb1_user u on b.uid=u.uid 
+     where bno = #{bno}
+     </select>
+  	<update id="update">
+  	update tb1_sboard set title=#{title},content=#{content},area=#{area},place=#{place},hopedate=#{hopedate},lessontime=#{lessontime},lessoncnt=#{lessoncnt},lesson=#{lesson},level=#{level},sex=#{sex},term=#{term}
+  	where bno = #{bno}
+  	</update>
+  	<delete id="delete">
+  	delete from tb1_sboard where bno =#{bno}
+  	</delete>
+  	<select id="listAll" resultType="org.study.domain.SboardVO">
+  		<![CDATA[
+  		select
+  			*
+  		from
+  			tb1_sboard
+  		where bno > 0
+  		order by bno desc, regdate desc
+  		]]>
+  	</select>
+  	<select id="listPage" resultType="SboardVO">
+  	<![CDATA[
+  	select * from tb1_sboard
+  	where bno > 0
+  	order by bno desc, regdate desc
+  	limit #{page}, 10
+  	]]>
+  	</select>
+  	<select id="listCriteria" resultType="SboardVO">
+  	<![CDATA[
+  	select * from tb1_sboard
+  	where bno > 0
+  	order by bno desc, regdate desc
+  	limit #{startPage}, #{perPageNum}
+  	]]>
+  	</select>
+  	<select id="countPaging" resultType="int">
+  	<![CDATA[
+  	select
+  		count(bno)
+  	from
+  		tb1_sboard
+  	where
+  	 	bno > 0
+  	]]>
+  	</select>
+  	<select id="listSearch" resultType="SboardVO">
+  	<![CDATA[
+  	select
+  		*
+  	from
+  		tb1_sboard
+  	where
+  		bno > 0
+  	]]>
+  	
+  	<include refid="search"></include>
+  
+  	<![CDATA[
+  	order by bno desc
+  	limit #{startPage}, #{perPageNum}
+  	]]>
+  	</select>
+  	<select id="listSearchCount" resultType="int">
+  	<![CDATA[
+  	select
+  		count(bno)
+  	from
+  		tb1_sboard
+  	where
+  	 	bno > 0
+  	]]>
+  	<include refid="search"></include>
+  	</select>
+  	<sql id="search">
+	  	<if test="searchType != null">
+	  		<if test="searchType == 't'.toString()">
+	  			and title like CONCAT('%',#{keyword},'%')
+	  		</if>
+	  		<if test="searchType == 'c'.toString()">
+	  			and content like CONCAT('%',#{keyword},'%')
+	  		</if>
+	  		<if test="searchType == 'w'.toString()">
+	  			and writer like CONCAT('%',#{keyword},'%')
+	  		</if>
+	  		<if test="searchType == 'tc'.toString()">
+	  			and (title like CONCAT('%',#{keyword},'%') OR content like CONCAT('%',#{keyword},'%'))
+	  		</if>
+	  	</if>
+  	</sql>
+  	<update id="updateReplyCnt">
+  	update tb1_sboard set replycnt = replycnt + #{amount} where bno = #{bno}
+  	</update>
+  	<update id="updateViewCnt">
+  	update tb1_sboard set viewcnt = viewcnt + 1 where bno = #{bno}
+  	</update>
+  	
+  	<delete id="deleteReply">
+  	delete from tb1_sreply where bno = #{bno} 
+  	</delete>
+  </mapper>
